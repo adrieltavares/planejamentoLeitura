@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planejamento de Leituras</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --accent-main:      #06b6d4;
+      --accent-secondary: #0ea5e9;
+      --accent-strong:    #7dd3fc;
+      --accent-title:     #bae6fd;
+      --accent-chip-bg:   #0b3140;
+      --accent-chip-text: #7dd3fc;
+      --accent-dark:      #04101a;
+      --accent-btn-hover: #0b3140;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0f0f1a;
+      color: #e0e0f0;
+      min-height: 100vh;
+      padding: 24px 20px 60px;
+    }
+
+    h1 { text-align: center; font-size: 1.8rem; margin-bottom: 6px; color: var(--accent-title); letter-spacing: 1px; }
+    .subtitle { text-align: center; color: #666; font-size: 0.85rem; margin-bottom: 28px; }
+
+    /* RESUMO */
+    .summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-bottom: 28px; }
+    .summary-item { background: #1a1a2e; border-radius: 12px; padding: 14px 16px; text-align: center; }
+    .s-label { font-size: 0.7rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+    .s-value { font-size: 1.35rem; font-weight: 700; color: var(--accent-strong); }
+
+    /* DIAS PADRÃO */
+    .weekdays-bar { background: #1a1a2e; border-radius: 14px; padding: 16px 20px; margin-bottom: 28px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .weekdays-bar .wd-label { font-size: 0.78rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap; }
+    .wd-toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+    .wd-btn { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #2e2e4e; background: #12122a; color: #666; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; user-select: none; }
+    .wd-btn.active { border-color: var(--accent-main); background: var(--accent-chip-bg); color: var(--accent-strong); }
+
+    /* TOP ACTIONS */
+    .top-actions { display: flex; justify-content: flex-end; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .btn-top { background: #1a1a2e; border: 1px solid #3a3a5e; border-radius: 10px; color: var(--accent-strong); padding: 9px 18px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: border-color 0.2s, background 0.2s; display: flex; align-items: center; gap: 6px; }
+    .btn-top:hover { border-color: var(--accent-main); background: var(--accent-btn-hover); }
+
+    /* CARDS */
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; margin-bottom: 28px; }
+    .card { background: #1a1a2e; border: 1px solid #2e2e4e; border-radius: 16px; padding: 20px; position: relative; transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(6,182,212,0.12); }
+    .card.archived { opacity: 0.7; border-color: #1e1e38; }
+    .card.archived:hover { transform: none; box-shadow: none; }
+
+    .card-actions { position: absolute; top: 14px; right: 14px; display: flex; gap: 6px; }
+    .btn-icon { background: none; border: none; color: #444; cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 4px 6px; border-radius: 6px; transition: color 0.2s, background 0.2s; }
+    .btn-icon:hover { color: var(--accent-strong); background: var(--accent-chip-bg); }
+    .btn-icon.danger:hover { color: #f87171; background: #2d0a0a; }
+
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; padding-right: 110px; }
+    .card-title { font-size: 1rem; font-weight: 700; color: var(--accent-title); line-height: 1.3; }
+    .card-pct { background: var(--accent-chip-bg); color: var(--accent-chip-text); font-size: 0.72rem; padding: 3px 10px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+
+    .archived-badge { display: inline-block; background: #1e2a1e; color: #34d399; font-size: 0.68rem; padding: 2px 8px; border-radius: 10px; margin-left: 8px; vertical-align: middle; }
+
+    .card-weekdays { display: flex; gap: 5px; margin-bottom: 12px; flex-wrap: wrap; }
+    .cwd-btn { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid #2e2e4e; background: #12122a; color: #555; font-size: 0.65rem; font-weight: 700; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
+    .cwd-btn.active { border-color: var(--accent-main); background: var(--accent-chip-bg); color: var(--accent-strong); }
+    .cwd-btn:disabled { cursor: default; }
+
+    .progress-bar-wrap { background: #0f0f1a; border-radius: 8px; height: 10px; margin-bottom: 14px; overflow: hidden; }
+    .progress-bar { height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--accent-main), var(--accent-secondary)); transition: width 0.6s ease; }
+    .progress-bar.danger  { background: linear-gradient(90deg, #dc2626, #f87171); }
+    .progress-bar.warning { background: linear-gradient(90deg, #d97706, #fbbf24); }
+    .progress-bar.success { background: linear-gradient(90deg, #059669, #34d399); }
+    .progress-bar.complete { background: linear-gradient(90deg, #059669, #34d399); }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .stat { background: #12122a; border-radius: 10px; padding: 8px 12px; }
+    .stat-label { font-size: 0.68rem; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+    .stat-value { font-size: 0.95rem; font-weight: 600; color: #e0e0f0; }
+    .stat-value.highlight { color: var(--accent-strong); }
+    .stat-value.danger    { color: #f87171; }
+    .stat-value.success   { color: #34d399; }
+    .stat-value.warning   { color: #fbbf24; }
+
+    .current-edit-wrap { display: flex; align-items: center; gap: 6px; }
+    .current-display { font-size: 0.95rem; font-weight: 600; color: var(--accent-strong); cursor: pointer; border-bottom: 1px dashed var(--accent-main); padding-bottom: 1px; transition: color 0.15s; }
+    .current-display:hover { color: var(--accent-title); }
+    .current-input { width: 90px; background: #0f0f1a; border: 1px solid var(--accent-main); border-radius: 6px; padding: 3px 8px; color: #e0e0f0; font-size: 0.9rem; outline: none; display: none; }
+    .btn-save-current { background: var(--accent-main); border: none; border-radius: 6px; color: #fff; font-size: 0.75rem; padding: 4px 10px; cursor: pointer; display: none; transition: opacity 0.2s; }
+    .btn-save-current:hover { opacity: 0.8; }
+
+    .dates-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #555; margin-top: 4px; }
+    .status-badge { font-size: 0.7rem; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+
+    /* HISTÓRICO */
+    .history-toggle { margin-top: 12px; width: 100%; background: #12122a; border: 1px solid #2e2e4e; border-radius: 8px; color: #888; font-size: 0.75rem; padding: 6px 12px; cursor: pointer; text-align: left; transition: border-color 0.2s, color 0.2s; }
+    .history-toggle:hover { border-color: var(--accent-main); color: var(--accent-strong); }
+    .history-list { margin-top: 8px; max-height: 160px; overflow-y: auto; display: none; }
+    .history-list.open { display: block; }
+    .history-entry { display: flex; justify-content: space-between; align-items: center; padding: 5px 8px; border-radius: 6px; font-size: 0.78rem; }
+    .history-entry:nth-child(odd) { background: #12122a; }
+    .history-entry .he-date { color: #666; }
+    .history-entry .he-page { color: var(--accent-strong); font-weight: 600; }
+    .history-entry .he-delta { color: #34d399; font-size: 0.7rem; }
+    .history-entry .he-delta.neg { color: #f87171; }
+
+    /* ARQUIVO */
+    .archive-section { margin-top: 12px; }
+    .archive-section-title { font-size: 0.8rem; color: #555; text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .archive-section-title::after { content: ''; flex: 1; height: 1px; background: #2e2e4e; }
+
+    /* MODAIS */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal { background: #1a1a2e; border: 1px solid #3a3a5e; border-radius: 20px; padding: 28px; width: 100%; transform: translateY(20px); transition: transform 0.2s; max-height: 90vh; overflow-y: auto; }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal h2 { font-size: 1.1rem; color: var(--accent-strong); margin-bottom: 20px; }
+
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px; }
+    .modal-group label { display: block; font-size: 0.72rem; color: #888; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .modal-group input { width: 100%; background: #12122a; border: 1px solid #2e2e4e; border-radius: 8px; padding: 9px 12px; color: #e0e0f0; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+    .modal-group input:focus { border-color: var(--accent-main); }
+
+    .modal-weekdays { margin-bottom: 20px; }
+    .modal-weekdays label { display: block; font-size: 0.72rem; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .modal-wd-toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+    .modal-wd-btn { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #2e2e4e; background: #12122a; color: #666; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; }
+    .modal-wd-btn.active { border-color: var(--accent-main); background: var(--accent-chip-bg); color: var(--accent-strong); }
+
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+    .btn-cancel { background: #12122a; border: 1px solid #2e2e4e; border-radius: 10px; color: #888; padding: 10px 20px; font-size: 0.9rem; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+    .btn-cancel:hover { border-color: var(--accent-main); color: var(--accent-strong); }
+    .btn-save { background: linear-gradient(135deg, var(--accent-main), var(--accent-secondary)); color: #fff; border: none; border-radius: 10px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .btn-save:hover { opacity: 0.85; }
+
+    /* RELATÓRIO */
+    #report-modal { max-width: 780px; }
+    .report-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .report-header h2 { margin-bottom: 0; }
+    .report-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .report-controls select, .report-controls input[type="number"] { background: #12122a; border: 1px solid #2e2e4e; border-radius: 8px; padding: 7px 10px; color: #e0e0f0; font-size: 0.85rem; outline: none; transition: border-color 0.2s; }
+    .report-controls select:focus, .report-controls input[type="number"]:focus { border-color: var(--accent-main); }
+    .btn-print { background: #12122a; border: 1px solid #2e2e4e; border-radius: 8px; color: var(--accent-strong); padding: 7px 14px; font-size: 0.85rem; cursor: pointer; transition: border-color 0.2s; }
+    .btn-print:hover { border-color: var(--accent-main); }
+
+    .report-table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid #2e2e4e; }
+    .report-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    .report-table thead tr { background: #12122a; }
+    .report-table th { padding: 10px 12px; text-align: left; color: #888; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; border-bottom: 1px solid #2e2e4e; }
+    .report-table td { padding: 9px 12px; border-bottom: 1px solid #1e1e38; white-space: nowrap; }
+    .report-table tbody tr:last-child td { border-bottom: none; }
+    .report-table tbody tr:hover { background: #1e1e38; }
+    .report-table tbody tr.today-row { background: var(--accent-dark); }
+    .report-table tbody tr.today-row td { color: var(--accent-strong); font-weight: 600; }
+    .rt-book { color: var(--accent-title); font-weight: 600; }
+    .rt-page { color: var(--accent-strong); }
+    .rt-delta { color: #34d399; }
+    .rt-day { color: #888; font-size: 0.75rem; }
+    .rt-today-badge { background: var(--accent-chip-bg); color: var(--accent-strong); font-size: 0.65rem; padding: 2px 7px; border-radius: 10px; margin-left: 6px; }
+    .report-empty { text-align: center; color: #555; padding: 30px; font-size: 0.9rem; }
+
+    /* FORMULÁRIO */
+    .form-card { background: #1a1a2e; border: 1px dashed #3a3a5e; border-radius: 16px; padding: 24px; margin-bottom: 28px; }
+    .form-card h2 { font-size: 1rem; color: var(--accent-strong); margin-bottom: 18px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.72rem; color: #888; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .form-group input { width: 100%; background: #12122a; border: 1px solid #2e2e4e; border-radius: 8px; padding: 9px 12px; color: #e0e0f0; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+    .form-group input:focus { border-color: var(--accent-main); }
+    .form-weekdays { margin-bottom: 16px; }
+    .form-weekdays label { display: block; font-size: 0.72rem; color: #888; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+    .form-wd-toggles { display: flex; gap: 8px; flex-wrap: wrap; }
+    .form-wd-btn { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #2e2e4e; background: #12122a; color: #666; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; }
+    .form-wd-btn.active { border-color: var(--accent-main); background: var(--accent-chip-bg); color: var(--accent-strong); }
+    .btn-add { background: linear-gradient(135deg, var(--accent-main), var(--accent-secondary)); color: #fff; border: none; border-radius: 10px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .btn-add:hover { opacity: 0.85; }
+
+    .empty-state { text-align: center; color: #444; padding: 40px; font-size: 0.95rem; grid-column: 1/-1; }
+
+    @media print {
+      body { background: #fff; color: #000; padding: 0; }
+      .modal-overlay { position: static; opacity: 1; pointer-events: all; background: none; padding: 0; display: block; }
+      #edit-overlay { display: none !important; }
+      #report-modal { max-width: 100%; border: none; border-radius: 0; padding: 20px; background: #fff; color: #000; max-height: none; }
+      .report-controls, .btn-print, .btn-cancel, .modal-actions { display: none !important; }
+      .report-table th { color: #333; }
+      .report-table td { color: #000; border-color: #ccc; }
+      .rt-book { color: #0369a1; } .rt-page { color: #0369a1; } .rt-delta { color: #065f46; }
+      h1, .summary, .weekdays-bar, .form-card, .cards-grid, .top-actions, .subtitle, .archive-section { display: none !important; }
+    }
+
+    @media (max-width: 520px) {
+      body { padding: 14px; }
+      .modal-grid { grid-template-columns: 1fr; }
+      .form-grid  { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>📚 Planejamento de Leituras</h1>
+<p class="subtitle">Clique na página atual para editar inline • ✏️ editar • 📊 relatório • 📦 arquivar</p>
+
+<div class="summary" id="summary"></div>
+
+<div class="top-actions">
+  <button class="btn-top" onclick="toggleArchiveView()">📦 <span id="archive-btn-label">Ver arquivo</span></button>
+  <button class="btn-top" onclick="openReport()">📊 Relatório de leituras futuras</button>
+</div>
+
+<div class="weekdays-bar">
+  <span class="wd-label">Dias padrão:</span>
+  <div class="wd-toggles" id="global-wd"></div>
+  <span style="font-size:0.72rem;color:#555;">(aplicado a novos livros)</span>
+</div>
+
+<div class="form-card">
+  <h2>+ Adicionar novo livro</h2>
+  <div class="form-grid">
+    <div class="form-group" style="grid-column:span 2;">
+      <label>Título do livro</label>
+      <input type="text" id="f-title" placeholder="Ex: Dom Casmurro" />
+    </div>
+    <div class="form-group">
+      <label>Página atual</label>
+      <input type="number" id="f-current" placeholder="0" min="0" />
+    </div>
+    <div class="form-group">
+      <label>Total de páginas</label>
+      <input type="number" id="f-total" placeholder="500" min="1" />
+    </div>
+    <div class="form-group">
+      <label>Data inicial</label>
+      <input type="date" id="f-start" />
+    </div>
+    <div class="form-group">
+      <label>Data final prevista</label>
+      <input type="date" id="f-end" />
+    </div>
+  </div>
+  <div class="form-weekdays">
+    <label>Dias de leitura</label>
+    <div class="form-wd-toggles" id="form-wd"></div>
+  </div>
+  <button class="btn-add" onclick="addBook()">Adicionar livro</button>
+</div>
+
+<div class="cards-grid" id="cards-grid"></div>
+
+<div class="archive-section" id="archive-section" style="display:none;">
+  <div class="archive-section-title">📦 Livros arquivados</div>
+  <div class="cards-grid" id="archive-grid"></div>
+</div>
+
+<!-- Modal edição -->
+<div class="modal-overlay" id="edit-overlay" onclick="handleOverlayClick(event,'edit-overlay')">
+  <div class="modal" style="max-width:520px;">
+    <h2>✏️ Editar livro</h2>
+    <input type="hidden" id="m-id" />
+    <div class="modal-grid">
+      <div class="modal-group" style="grid-column:span 2;">
+        <label>Título</label>
+        <input type="text" id="m-title" />
+      </div>
+      <div class="modal-group">
+        <label>Página atual</label>
+        <input type="number" id="m-current" min="0" />
+      </div>
+      <div class="modal-group">
+        <label>Total de páginas</label>
+        <input type="number" id="m-total" min="1" />
+      </div>
+      <div class="modal-group">
+        <label>Data inicial</label>
+        <input type="date" id="m-start" />
+      </div>
+      <div class="modal-group">
+        <label>Data final prevista</label>
+        <input type="date" id="m-end" />
+      </div>
+    </div>
+    <div class="modal-weekdays">
+      <label>Dias de leitura</label>
+      <div class="modal-wd-toggles" id="modal-wd"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeOverlay('edit-overlay')">Cancelar</button>
+      <button class="btn-save" onclick="saveModal()">Salvar alterações</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal relatório -->
+<div class="modal-overlay" id="report-overlay" onclick="handleOverlayClick(event,'report-overlay')">
+  <div class="modal" id="report-modal">
+    <div class="report-header">
+      <h2>📊 Relatório de leituras futuras</h2>
+      <div class="report-controls">
+        <select id="r-book" onchange="renderReport()"><option value="all">Todos os livros ativos</option></select>
+        <input type="number" id="r-days" value="30" min="1" max="365" style="width:80px;" onchange="renderReport()" />
+        <span style="font-size:0.78rem;color:#666;">dias</span>
+        <button class="btn-print" onclick="window.print()">🖨️ Imprimir</button>
+      </div>
+    </div>
+    <div id="report-body"></div>
+    <div class="modal-actions" style="margin-top:20px;">
+      <button class="btn-cancel" onclick="closeOverlay('report-overlay')">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'leitura_v6';
+  const DAY_NAMES   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const DAY_FULL    = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  const DEFAULT_WD  = [1,2,3,4,5];
+
+  let state       = loadState();
+  let modalWD     = [];
+  let formWD      = [];
+  let showArchive = false;
+
+  /* ── Persistência ── */
+  function loadState() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (raw && Array.isArray(raw.books)) return raw;
+    } catch {}
+    return null;
+  }
+
+  function defaultState() {
+    return {
+      globalWeekdays: [0,1,2,3,4,5,6],
+      books: [
+        { id: uid(), title: 'A Leste do Éden', current: 5130, total: 9483, start: '2026-01-20', end: '2026-03-26', weekdays: [0,1,2,3,4,5,6], history: [{ date: todayStr(), page: 5130 }], archived: false },
+        { id: uid(), title: 'A Essência do Catolicismo', current: 204, total: 256, start: '2026-01-26', end: '2026-02-28', weekdays: [0,1,2,3,4,5,6], history: [{ date: todayStr(), page: 204 }], archived: false }
+      ]
+    };
+  }
+
+  if (!state) state = defaultState();
+  state.books.forEach(b => {
+    if (!b.history) b.history = [];
+    if (b.archived === undefined) b.archived = false;
+  });
+
+  function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+  function uid() { return Math.random().toString(36).substr(2, 9); }
+
+  /* ── Datas ── */
+  function parseDate(str) { const [y,m,d] = str.split('-').map(Number); return new Date(y, m-1, d); }
+  function formatDate(str) { if (!str) return ''; const [y,m,d] = str.split('-'); return `${d}/${m}/${y}`; }
+  function dateToStr(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+  function todayStr() { return dateToStr(new Date()); }
+  function today() { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), n.getDate()); }
+
+  function countWorkingDays(start, end, weekdays) {
+    if (!weekdays || weekdays.length === 0) return 0;
+    let count = 0;
+    const cur = new Date(start);
+    while (cur <= end) { if (weekdays.includes(cur.getDay())) count++; cur.setDate(cur.getDate()+1); }
+    return count;
+  }
+
+  /* ── Cálculo ── */
+  function calcBook(b) {
+    const start  = parseDate(b.start);
+    const end    = parseDate(b.end);
+    const now    = today();
+    const wd     = b.weekdays && b.weekdays.length > 0 ? b.weekdays : DEFAULT_WD;
+    const capNow = now < start ? start : now > end ? end : now;
+
+    const totalWorkDays     = countWorkingDays(start, end, wd);
+    const elapsedWorkDays   = countWorkingDays(start, capNow, wd);
+    const remainingWorkDays = countWorkingDays(capNow, end, wd);
+
+    const left = Math.max(0, b.total - b.current);
+    const pct  = Math.min(100, Math.round((b.current / b.total) * 100));
+
+    const avgPerDay    = elapsedWorkDays > 0 ? b.current / elapsedWorkDays : 0;
+    const neededPerDay = remainingWorkDays > 0 ? left / remainingWorkDays : (left > 0 ? Infinity : 0);
+    const targetPage   = remainingWorkDays > 0 ? Math.min(b.total, b.current + Math.ceil(left / remainingWorkDays)) : b.total;
+    const complete     = b.current >= b.total;
+
+    let status = 'success';
+    if (!complete) {
+      if (neededPerDay === Infinity || now > end) status = 'danger';
+      else if (avgPerDay < neededPerDay * 0.85) status = 'danger';
+      else if (avgPerDay < neededPerDay) status = 'warning';
+    }
+
+    return { totalWorkDays, elapsedWorkDays, remainingWorkDays, avgPerDay, neededPerDay, left, pct, status, targetPage, complete };
+  }
+
+  function statusLabel(s, complete) {
+    if (complete) return 'Concluído';
+    return s === 'danger' ? 'Atrasado' : s === 'warning' ? 'Atenção' : 'No ritmo';
+  }
+
+  function statusColors(s, complete) {
+    if (complete) return { bg: '#052e16', fg: '#34d399' };
+    if (s === 'danger')  return { bg: '#2d0a0a', fg: '#f87171' };
+    if (s === 'warning') return { bg: '#2d1a00', fg: '#fbbf24' };
+    return { bg: '#052e16', fg: '#34d399' };
+  }
+
+  /* ── Global weekdays ── */
+  function renderGlobalWD() {
+    const wrap = document.getElementById('global-wd');
+    wrap.innerHTML = '';
+    DAY_NAMES.forEach((name, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'wd-btn' + (state.globalWeekdays.includes(i) ? ' active' : '');
+      btn.textContent = name;
+      btn.onclick = () => {
+        const idx = state.globalWeekdays.indexOf(i);
+        if (idx >= 0) state.globalWeekdays.splice(idx, 1); else state.globalWeekdays.push(i);
+        saveState(); renderGlobalWD(); syncFormWD();
+      };
+      wrap.appendChild(btn);
+    });
+  }
+
+  /* ── Form weekdays ── */
+  function syncFormWD() { formWD = [...state.globalWeekdays]; renderFormWD(); }
+
+  function renderFormWD() {
+    const wrap = document.getElementById('form-wd');
+    wrap.innerHTML = '';
+    DAY_NAMES.forEach((name, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'form-wd-btn' + (formWD.includes(i) ? ' active' : '');
+      btn.textContent = name;
+      btn.onclick = () => { const idx = formWD.indexOf(i); if (idx >= 0) formWD.splice(idx, 1); else formWD.push(i); renderFormWD(); };
+      wrap.appendChild(btn);
+    });
+  }
+
+  /* ── Modal weekdays ── */
+  function renderModalWD() {
+    const wrap = document.getElementById('modal-wd');
+    wrap.innerHTML = '';
+    DAY_NAMES.forEach((name, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'modal-wd-btn' + (modalWD.includes(i) ? ' active' : '');
+      btn.textContent = name;
+      btn.onclick = () => { const idx = modalWD.indexOf(i); if (idx >= 0) modalWD.splice(idx, 1); else modalWD.push(i); renderModalWD(); };
+      wrap.appendChild(btn);
+    });
+  }
+
+  /* ── Overlays ── */
+  function closeOverlay(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+  function openOverlay(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow = 'hidden'; }
+  function handleOverlayClick(e, id) { if (e.target === document.getElementById(id)) closeOverlay(id); }
+
+  /* ── Modal edição ── */
+  function openModal(id) {
+    const book = state.books.find(b => b.id === id);
+    if (!book) return;
+    document.getElementById('m-id').value      = book.id;
+    document.getElementById('m-title').value   = book.title;
+    document.getElementById('m-current').value = book.current;
+    document.getElementById('m-total').value   = book.total;
+    document.getElementById('m-start').value   = book.start;
+    document.getElementById('m-end').value     = book.end;
+    modalWD = [...(book.weekdays || DEFAULT_WD)];
+    renderModalWD();
+    openOverlay('edit-overlay');
+  }
+
+  function saveModal() {
+    const id      = document.getElementById('m-id').value;
+    const title   = document.getElementById('m-title').value.trim();
+    const current = parseInt(document.getElementById('m-current').value);
+    const total   = parseInt(document.getElementById('m-total').value);
+    const start   = document.getElementById('m-start').value;
+    const end     = document.getElementById('m-end').value;
+
+    if (!title)               { alert('Informe o título.'); return; }
+    if (!total || total < 1)  { alert('Total de páginas inválido.'); return; }
+    if (!start || !end)       { alert('Informe as datas.'); return; }
+    if (start >= end)         { alert('A data final deve ser após a data inicial.'); return; }
+    if (modalWD.length === 0) { alert('Selecione ao menos um dia de leitura.'); return; }
+
+    const book = state.books.find(b => b.id === id);
+    if (!book) return;
+
+    const newCurrent = Math.min(isNaN(current) ? 0 : current, total);
+    if (newCurrent !== book.current) pushHistory(book, newCurrent);
+
+    book.title    = title;
+    book.current  = newCurrent;
+    book.total    = total;
+    book.start    = start;
+    book.end      = end;
+    book.weekdays = [...modalWD];
+
+    saveState(); closeOverlay('edit-overlay'); renderAll();
+  }
+
+  /* ── Arquivar / Desarquivar ── */
+  function archiveBook(id) {
+    const book = state.books.find(b => b.id === id);
+    if (!book) return;
+    book.archived   = true;
+    book.archivedAt = todayStr();
+    saveState(); renderAll();
+  }
+
+  function unarchiveBook(id) {
+    const book = state.books.find(b => b.id === id);
+    if (!book) return;
+    book.archived   = false;
+    book.archivedAt = null;
+    saveState(); renderAll();
+  }
+
+  function toggleArchiveView() {
+    showArchive = !showArchive;
+    document.getElementById('archive-btn-label').textContent = showArchive ? 'Ocultar arquivo' : 'Ver arquivo';
+    document.getElementById('archive-section').style.display = showArchive ? 'block' : 'none';
+    if (showArchive) renderArchive();
+  }
+
+  /* ── Histórico ── */
+  function pushHistory(book, newPage) {
+    if (!book.history) book.history = [];
+    const ts = todayStr();
+    const existing = book.history.find(h => h.date === ts);
+    if (existing) existing.page = newPage;
+    else book.history.push({ date: ts, page: newPage });
+    book.history.sort((a, b) => a.date.localeCompare(b.date));
+    if (book.history.length > 365) book.history = book.history.slice(-365);
+  }
+
+  function renderHistoryHTML(b) {
+    const hist = (b.history || []).slice().reverse();
+    if (hist.length === 0) return '<div style="padding:8px;color:#555;font-size:0.8rem;">Nenhum registro ainda.</div>';
+    return hist.map((h, i) => {
+      const prev  = hist[i + 1];
+      const delta = prev ? h.page - prev.page : null;
+      const deltaStr = delta !== null
+        ? `<span class="he-delta ${delta < 0 ? 'neg' : ''}">${delta >= 0 ? '+' : ''}${delta.toLocaleString('pt-BR')} pág.</span>`
+        : '';
+      return `<div class="history-entry">
+        <span class="he-date">${formatDate(h.date)}</span>
+        <span class="he-page">pág. ${h.page.toLocaleString('pt-BR')}</span>
+        ${deltaStr}
+      </div>`;
+    }).join('');
+  }
+
+  function toggleHistory(id, btn) {
+    const el = document.getElementById(id);
+    el.classList.toggle('open');
+    const isOpen = el.classList.contains('open');
+    btn.textContent = btn.textContent.replace(isOpen ? 'Ver' : 'Ocultar', isOpen ? 'Ocultar' : 'Ver');
+  }
+
+  /* ── Build card ── */
+  function buildCard(b, isArchived) {
+    const c  = calcBook(b);
+    const sc = statusColors(c.status, c.complete);
+
+    const card = document.createElement('div');
+    card.className = 'card' + (isArchived ? ' archived' : '');
+    card.dataset.id = b.id;
+
+    const actions = isArchived
+      ? `<div class="card-actions">
+           <button class="btn-icon" onclick="unarchiveBook('${b.id}')" title="Desarquivar">↩️</button>
+           <button class="btn-icon danger" onclick="removeBook('${b.id}')" title="Remover permanentemente">✕</button>
+         </div>`
+      : `<div class="card-actions">
+           <button class="btn-icon" onclick="openModal('${b.id}')" title="Editar">✏️</button>
+           <button class="btn-icon" onclick="openBookReport('${b.id}')" title="Relatório">📊</button>
+           <button class="btn-icon" onclick="archiveBook('${b.id}')" title="Arquivar">📦</button>
+           <button class="btn-icon danger" onclick="removeBook('${b.id}')" title="Remover permanentemente">✕</button>
+         </div>`;
+
+    const archivedBadge = isArchived
+      ? `<span class="archived-badge">Arquivado${b.archivedAt ? ' · ' + formatDate(b.archivedAt) : ''}</span>`
+      : '';
+
+    const statsHTML = isArchived
+      ? `<div class="stat"><div class="stat-label">Páginas lidas</div><div class="stat-value highlight">${b.current.toLocaleString('pt-BR')} / ${b.total.toLocaleString('pt-BR')}</div></div>
+         <div class="stat"><div class="stat-label">Dias úteis totais</div><div class="stat-value">${c.totalWorkDays}</div></div>
+         <div class="stat"><div class="stat-label">Média / dia</div><div class="stat-value">${c.avgPerDay.toFixed(1)}</div></div>
+         <div class="stat"><div class="stat-label">Registros</div><div class="stat-value">${(b.history||[]).length}</div></div>`
+      : `<div class="stat">
+           <div class="stat-label">Página atual</div>
+           <div class="current-edit-wrap">
+             <span class="current-display" id="disp-${b.id}" onclick="startEdit('${b.id}')" title="Clique para editar">${b.current.toLocaleString('pt-BR')}</span>
+             <input class="current-input" id="inp-${b.id}" type="number" min="0" max="${b.total}" value="${b.current}" onkeydown="handleKey(event,'${b.id}')" />
+             <button class="btn-save-current" id="save-${b.id}" onclick="saveEdit('${b.id}')">✓</button>
+           </div>
+         </div>
+         <div class="stat"><div class="stat-label">Total</div><div class="stat-value">${b.total.toLocaleString('pt-BR')}</div></div>
+         <div class="stat"><div class="stat-label">Objetivo hoje</div><div class="stat-value highlight">pág. ${c.targetPage.toLocaleString('pt-BR')}</div></div>
+         <div class="stat"><div class="stat-label">Faltam</div><div class="stat-value ${c.status==='danger'?'danger':''}">${c.left.toLocaleString('pt-BR')} pág.</div></div>
+         <div class="stat"><div class="stat-label">Média / dia</div><div class="stat-value">${c.avgPerDay.toFixed(1)}</div></div>
+         <div class="stat"><div class="stat-label">Necessário / dia</div><div class="stat-value ${c.status==='danger'?'danger':c.status==='warning'?'warning':'success'}">${isFinite(c.neededPerDay)?c.neededPerDay.toFixed(1):'∞'}</div></div>
+         <div class="stat"><div class="stat-label">Dias úteis decorridos</div><div class="stat-value">${c.elapsedWorkDays}</div></div>
+         <div class="stat"><div class="stat-label">Dias úteis restantes</div><div class="stat-value ${c.remainingWorkDays===0&&c.left>0?'danger':''}">${c.remainingWorkDays}</div></div>`;
+
+    card.innerHTML = `
+      ${actions}
+      <div class="card-header">
+        <div class="card-title">${b.title}${archivedBadge}</div>
+        <div class="card-pct">${c.pct}%</div>
+      </div>
+      <div class="card-weekdays" id="cwd-${b.id}"></div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar ${c.complete ? 'complete' : c.status}" style="width:${c.pct}%"></div>
+      </div>
+      <div class="stats-grid">${statsHTML}</div>
+      <div class="dates-row">
+        <span>Início: ${formatDate(b.start)}</span>
+        <span class="status-badge" style="background:${sc.bg};color:${sc.fg}">${statusLabel(c.status, c.complete)}</span>
+        <span>Fim: ${formatDate(b.end)}</span>
+      </div>
+      <button class="history-toggle" onclick="toggleHistory('hist-${b.id}',this)">
+        📈 Ver histórico de progresso (${(b.history||[]).length} registros)
+      </button>
+      <div class="history-list" id="hist-${b.id}">${renderHistoryHTML(b)}</div>
+    `;
+
+    return card;
+  }
+
+  function renderCardWD(b, disabled) {
+    const wrap = document.getElementById(`cwd-${b.id}`);
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    DAY_NAMES.forEach((name, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'cwd-btn' + (b.weekdays.includes(i) ? ' active' : '');
+      btn.textContent = name;
+      btn.title = b.weekdays.includes(i) ? 'Dia de leitura' : 'Dia de descanso';
+      if (disabled) {
+        btn.disabled = true;
+      } else {
+        btn.onclick = () => {
+          const idx = b.weekdays.indexOf(i);
+          if (idx >= 0) b.weekdays.splice(idx, 1); else b.weekdays.push(i);
+          saveState(); renderAll();
+        };
+      }
+      wrap.appendChild(btn);
+    });
+  }
+
+  /* ── Render ── */
+  function renderCards() {
+    const grid   = document.getElementById('cards-grid');
+    grid.innerHTML = '';
+    const active = state.books.filter(b => !b.archived);
+    if (active.length === 0) {
+      grid.innerHTML = '<div class="empty-state">Nenhum livro ativo. Adicione um acima ou desarquive um livro.</div>';
+    } else {
+      active.forEach(b => { grid.appendChild(buildCard(b, false)); renderCardWD(b, false); });
+    }
+    renderSummary();
+  }
+
+  function renderArchive() {
+    const grid     = document.getElementById('archive-grid');
+    grid.innerHTML = '';
+    const archived = state.books.filter(b => b.archived);
+    if (archived.length === 0) {
+      grid.innerHTML = '<div class="empty-state">Nenhum livro arquivado.</div>';
+    } else {
+      archived.forEach(b => { grid.appendChild(buildCard(b, true)); renderCardWD(b, true); });
+    }
+  }
+
+  function renderAll() { renderCards(); if (showArchive) renderArchive(); }
+
+  /* ── Edição inline ── */
+  function startEdit(id) {
+    document.getElementById(`disp-${id}`).style.display = 'none';
+    const inp = document.getElementById(`inp-${id}`);
+    const sav = document.getElementById(`save-${id}`);
+    inp.style.display = 'block'; sav.style.display = 'block';
+    inp.focus(); inp.select();
+  }
+
+  function saveEdit(id) {
+    const inp  = document.getElementById(`inp-${id}`);
+    const val  = parseInt(inp.value);
+    const book = state.books.find(b => b.id === id);
+    if (!book || isNaN(val) || val < 0) { cancelEdit(id); return; }
+    const newPage = Math.min(val, book.total);
+    if (newPage !== book.current) pushHistory(book, newPage);
+    book.current = newPage;
+    saveState(); renderAll();
+  }
+
+  function cancelEdit(id) {
+    document.getElementById(`disp-${id}`).style.display = '';
+    document.getElementById(`inp-${id}`).style.display  = 'none';
+    document.getElementById(`save-${id}`).style.display = 'none';
+  }
+
+  function handleKey(e, id) {
+    if (e.key === 'Enter')  saveEdit(id);
+    if (e.key === 'Escape') cancelEdit(id);
+  }
+
+  /* ── Resumo ── */
+  function renderSummary() {
+    const s        = document.getElementById('summary');
+    const active   = state.books.filter(b => !b.archived);
+    const archived = state.books.filter(b => b.archived);
+    const readPages = active.reduce((a, b) => a + b.current, 0);
+    const leftPages = active.reduce((a, b) => a + Math.max(0, b.total - b.current), 0);
+    const onTrack   = active.filter(b => calcBook(b).status === 'success').length;
+    const avgTotal  = active.reduce((a, b) => a + calcBook(b).avgPerDay, 0);
+
+    s.innerHTML = `
+      <div class="summary-item"><div class="s-label">Livros ativos</div><div class="s-value">${active.length}</div></div>
+      <div class="summary-item"><div class="s-label">Páginas lidas</div><div class="s-value">${readPages.toLocaleString('pt-BR')}</div></div>
+      <div class="summary-item"><div class="s-label">Páginas restantes</div><div class="s-value">${leftPages.toLocaleString('pt-BR')}</div></div>
+      <div class="summary-item"><div class="s-label">No ritmo</div><div class="s-value" style="color:#34d399">${onTrack}/${active.length}</div></div>
+      <div class="summary-item"><div class="s-label">Média diária total</div><div class="s-value">${avgTotal.toFixed(1)}</div></div>
+      <div class="summary-item"><div class="s-label">Arquivados</div><div class="s-value" style="color:#888">${archived.length}</div></div>
+    `;
+  }
+
+  /* ── Adicionar livro ── */
+  function addBook() {
+    const title   = document.getElementById('f-title').value.trim();
+    const current = parseInt(document.getElementById('f-current').value) || 0;
+    const total   = parseInt(document.getElementById('f-total').value);
+    const start   = document.getElementById('f-start').value;
+    const end     = document.getElementById('f-end').value;
+
+    if (!title || !total || !start || !end) { alert('Preencha todos os campos obrigatórios.'); return; }
+    if (total < 1)           { alert('Total de páginas inválido.'); return; }
+    if (start >= end)        { alert('A data final deve ser após a data inicial.'); return; }
+    if (formWD.length === 0) { alert('Selecione ao menos um dia de leitura.'); return; }
+
+    const newBook = { id: uid(), title, current, total, start, end, weekdays: [...formWD], history: [], archived: false };
+    if (current > 0) newBook.history.push({ date: todayStr(), page: current });
+
+    state.books.push(newBook);
+    saveState(); renderAll();
+    ['f-title','f-current','f-total','f-start','f-end'].forEach(id => { document.getElementById(id).value = ''; });
+    syncFormWD();
+  }
+
+  /* ── Remover livro ── */
+  function removeBook(id) {
+    if (!confirm('Remover permanentemente este livro? Esta ação não pode ser desfeita.')) return;
+    state.books = state.books.filter(b => b.id !== id);
+    saveState(); renderAll();
+  }
+
+  /* ── Relatório ── */
+  function openReport() {
+    populateReportSelect();
+    renderReport();
+    openOverlay('report-overlay');
+  }
+
+  function openBookReport(id) {
+    populateReportSelect();
+    document.getElementById('r-book').value = id;
+    renderReport();
+    openOverlay('report-overlay');
+  }
+
+  function populateReportSelect() {
+    const sel     = document.getElementById('r-book');
+    const current = sel.value;
+    sel.innerHTML = '<option value="all">Todos os livros ativos</option>';
+    state.books.filter(b => !b.archived).forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b.id; opt.textContent = b.title;
+      sel.appendChild(opt);
+    });
+    if (current) sel.value = current;
+  }
+
+  function renderReport() {
+    const bookId  = document.getElementById('r-book').value;
+    const days    = Math.max(1, parseInt(document.getElementById('r-days').value) || 30);
+    const body    = document.getElementById('report-body');
+    const nowDate = today();
+    const todaySt = todayStr();
+
+    const books = bookId === 'all'
+      ? state.books.filter(b => !b.archived)
+      : state.books.filter(b => b.id === bookId);
+
+    if (books.length === 0) { body.innerHTML = '<div class="report-empty">Nenhum livro para exibir.</div>'; return; }
+
+    const rows = [];
+
+    for (let d = 0; d < days; d++) {
+      const date      = new Date(nowDate);
+      date.setDate(date.getDate() + d);
+      const dateStr   = dateToStr(date);
+      const dayOfWeek = date.getDay();
+      const isToday   = dateStr === todaySt;
+
+      books.forEach(b => {
+        const end   = parseDate(b.end);
+        const start = parseDate(b.start);
+        if (date > end || date < start) return;
+        if (!b.weekdays.includes(dayOfWeek)) return;
+
+        const wd = b.weekdays && b.weekdays.length > 0 ? b.weekdays : DEFAULT_WD;
+        const remainingFromToday = countWorkingDays(nowDate, end, wd);
+        const remainingFromDay   = countWorkingDays(date, end, wd);
+        const left               = Math.max(0, b.total - b.current);
+        const pagesPerDay        = remainingFromToday > 0 ? left / remainingFromToday : 0;
+        const daysFromTodayToThis = remainingFromToday - remainingFromDay;
+        const targetPage         = Math.min(b.total, Math.round(b.current + pagesPerDay * (daysFromTodayToThis + 1)));
+        const pagesToRead        = Math.round(pagesPerDay);
+
+        rows.push({ dateStr, date, dayOfWeek, isToday, bookTitle: b.title, targetPage, pagesToRead, bookId: b.id });
+      });
+    }
+
+    if (rows.length === 0) { body.innerHTML = '<div class="report-empty">Nenhum dia de leitura encontrado no período selecionado.</div>'; return; }
+
+    const byDate = {};
+    rows.forEach(r => { if (!byDate[r.dateStr]) byDate[r.dateStr] = []; byDate[r.dateStr].push(r); });
+
+    let html = `
+      <div class="report-table-wrap">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Dia</th>
+              <th>Livro</th>
+              <th>Pág. a ler</th>
+              <th>Objetivo (pág.)</th>
+            </tr>
+          </thead>
+          <tbody>`;
+
+    Object.keys(byDate).sort().forEach(dateStr => {
+      byDate[dateStr].forEach((r, i) => {
+        const rowClass   = r.isToday ? 'today-row' : '';
+        const todayBadge = r.isToday && i === 0 ? '<span class="rt-today-badge">Hoje</span>' : '';
+        html += `
+          <tr class="${rowClass}">
+            <td>${i === 0 ? `<strong>${formatDate(dateStr)}</strong>${todayBadge}` : ''}</td>
+            <td class="rt-day">${i === 0 ? DAY_FULL[r.dayOfWeek] : ''}</td>
+            <td class="rt-book">${r.bookTitle}</td>
+            <td class="rt-delta">+${r.pagesToRead.toLocaleString('pt-BR')}</td>
+            <td class="rt-page">${r.targetPage.toLocaleString('pt-BR')}</td>
+          </tr>`;
+      });
+    });
+
+    html += '</tbody></table></div>';
+    body.innerHTML = html;
+  }
+
+  /* ── Teclado ── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closeOverlay('edit-overlay'); closeOverlay('report-overlay'); }
+  });
+
+  /* ── Init ── */
+  formWD = [...state.globalWeekdays];
+  renderGlobalWD();
+  renderFormWD();
+  renderAll();
+</script>
+</body>
+</html>

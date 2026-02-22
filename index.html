@@ -1181,7 +1181,7 @@
     const DAY_FULL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
     const DEFAULT_WD = [1, 2, 3, 4, 5];
 
-    let state = loadState();
+    window.state = loadState();
     let modalWD = [];
     let formWD = [];
     let showArchive = false;
@@ -1205,15 +1205,15 @@
       };
     }
 
-    if (!state) state = defaultState();
-    state.books.forEach(b => {
+    if (!window.state) window.state = defaultState();
+    window.state.books.forEach(b => {
       if (!b.history) b.history = [];
       if (b.archived === undefined) b.archived = false;
     });
 
     function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      if (window.syncToFirebase) window.syncToFirebase(state);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(window.state));
+      if (window.syncToFirebase) window.syncToFirebase(window.state);
     }
 
     function uid() { return Math.random().toString(36).substr(2, 9); }
@@ -1739,10 +1739,13 @@
     });
 
     /* ── Init ── */
-    formWD = [...state.globalWeekdays];
-    renderGlobalWD();
-    renderFormWD();
-    renderAll();
+    window.initApp = () => {
+      formWD = [...window.state.globalWeekdays];
+      renderGlobalWD();
+      renderFormWD();
+      renderAll();
+    };
+    window.initApp();
   </script>
 
   <!-- Firebase Integration -->
@@ -1775,36 +1778,51 @@
       try {
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const docRef = doc(db, "usuarios", "default_user"); // Usando um ID fixo por enquanto
+        const docRef = doc(db, "usuarios", "default_user");
 
-        updateStatus('online', 'Conectado ao Firebase');
+        updateStatus('online', 'Conectado');
 
-        // Função para enviar dados
+        // Função para enviar dados (chamada pelo saveState no script principal)
         window.syncToFirebase = async (data) => {
           try {
-            updateStatus('syncing', 'Sincronizando...');
-            await setDoc(docRef, data);
-            updateStatus('online', 'Nuvem atualizada');
+            updateStatus('syncing', 'Salvando...');
+            await setDoc(docRef, JSON.parse(JSON.stringify(data))); // Limpa referências circulares
+            updateStatus('online', 'Sincronizado');
           } catch (e) {
-            console.error("Erro ao salvar no Firebase:", e);
-            updateStatus('offline', 'Erro na sincronização');
+            console.error("Erro ao salvar:", e);
+            updateStatus('offline', 'Erro ao salvar. Verifique as Regras do Firestore.');
           }
         };
 
-        // Carregar dados iniciais do Firebase
-        const snapshot = await getDoc(docRef);
-        if (snapshot.exists()) {
-          const cloudData = snapshot.data();
-          // Mesclar ou substituir o estado local
-          // Por segurança, vamos apenas perguntar ou atualizar se for mais recente (simplificado aqui)
-          console.log("Dados carregados da nuvem.");
-          // window.state = cloudData; // Se quiser forçar o da nuvem
-          // window.renderAll();
-        }
+        // Escuta mudanças em tempo real (Carregamento Automático)
+        onSnapshot(docRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const cloudData = docSnap.data();
+
+            // Verifica se os dados da nuvem são diferentes do estado local atual
+            const localStr = JSON.stringify(window.state);
+            const cloudStr = JSON.stringify(cloudData);
+
+            if (localStr !== cloudStr) {
+              console.log("Sincronizando mudanças da nuvem...");
+              window.state = cloudData;
+              localStorage.setItem('leitura_v6', cloudStr);
+              if (window.initApp) window.initApp();
+              updateStatus('online', 'Nuvem atualizada');
+            }
+          } else {
+            console.log("Nenhum dado encontrado na nuvem para este usuário.");
+          }
+        }, (error) => {
+          console.error("Erro no Listener:", error);
+          if (error.code === 'permission-denied') {
+            updateStatus('offline', 'Acesso negado. Ative o "Modo de Teste" no Firestore.');
+          }
+        });
 
       } catch (e) {
-        console.error("Erro ao inicializar Firebase:", e);
-        updateStatus('offline', 'Erro de conexão');
+        console.error("Erro Firebase:", e);
+        updateStatus('offline', 'Falha de conexão');
       }
     } else {
       updateStatus('', 'Configure o Firebase no código');

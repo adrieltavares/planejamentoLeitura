@@ -598,6 +598,41 @@
       transform: translateY(0);
     }
 
+    .form-card {
+      background: #1a1a2e;
+      border: 1px solid #2e2e4e;
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 28px;
+    }
+
+    .form-card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      color: var(--accent-strong);
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      color: #666;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .form-group input {
+      width: 100%;
+      background: #12122a;
+      border: 1px solid #2e2e4e;
+      border-radius: 10px;
+      padding: 11px 16px;
+      color: #e0e0f0;
+      font-size: 0.92rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
     .modal h2 {
       font-size: 1.1rem;
       color: var(--accent-strong);
@@ -1052,6 +1087,20 @@
         grid-template-columns: 1fr 1fr;
       }
     }
+
+    /* OBSERVAÇÃO */
+    .book-notes {
+      font-size: 0.78rem;
+      color: #aaa;
+      background: #12122a;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      font-style: italic;
+      border-left: 3px solid var(--accent-main);
+      line-height: 1.4;
+      word-wrap: break-word;
+    }
   </style>
 </head>
 
@@ -1106,6 +1155,10 @@
       <label>Dias de leitura</label>
       <div class="form-wd-toggles" id="form-wd"></div>
     </div>
+    <div class="form-group" style="margin-bottom: 16px;">
+      <label>Breve observação</label>
+      <input type="text" id="f-notes" placeholder="Ex: Livro para o vestibular, edição especial..." />
+    </div>
     <button class="btn-add" onclick="addBook()">Adicionar livro</button>
   </div>
 
@@ -1141,6 +1194,10 @@
         <div class="modal-group">
           <label>Data final prevista</label>
           <input type="date" id="m-end" />
+        </div>
+        <div class="modal-group" style="grid-column:span 2;">
+          <label>Observação</label>
+          <input type="text" id="m-notes" />
         </div>
       </div>
       <div class="modal-weekdays">
@@ -1181,11 +1238,6 @@
     const DAY_FULL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
     const DEFAULT_WD = [1, 2, 3, 4, 5];
 
-    window.state = loadState();
-    let modalWD = [];
-    let formWD = [];
-    let showArchive = false;
-
     /* ── Persistência ── */
     function loadState() {
       try {
@@ -1205,15 +1257,23 @@
       };
     }
 
-    if (!window.state) window.state = defaultState();
-    window.state.books.forEach(b => {
+    let state = loadState();
+    if (!state) state = defaultState();
+    window.state = state; // Compartilha com o script do Firebase
+
+    let modalWD = [];
+    let formWD = [];
+    let showArchive = false;
+
+    state.books.forEach(b => {
       if (!b.history) b.history = [];
       if (b.archived === undefined) b.archived = false;
     });
 
     function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(window.state));
-      if (window.syncToFirebase) window.syncToFirebase(window.state);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      window.state = state;
+      if (window.syncToFirebase) window.syncToFirebase(state);
     }
 
     function uid() { return Math.random().toString(36).substr(2, 9); }
@@ -1281,11 +1341,11 @@
       wrap.innerHTML = '';
       DAY_NAMES.forEach((name, i) => {
         const btn = document.createElement('button');
-        btn.className = 'wd-btn' + (state.globalWeekdays.includes(i) ? ' active' : '');
+        btn.className = 'wd-btn' + (window.state.globalWeekdays.includes(i) ? ' active' : '');
         btn.textContent = name;
         btn.onclick = () => {
-          const idx = state.globalWeekdays.indexOf(i);
-          if (idx >= 0) state.globalWeekdays.splice(idx, 1); else state.globalWeekdays.push(i);
+          const idx = window.state.globalWeekdays.indexOf(i);
+          if (idx >= 0) window.state.globalWeekdays.splice(idx, 1); else window.state.globalWeekdays.push(i);
           saveState(); renderGlobalWD(); syncFormWD();
         };
         wrap.appendChild(btn);
@@ -1293,7 +1353,7 @@
     }
 
     /* ── Form weekdays ── */
-    function syncFormWD() { formWD = [...state.globalWeekdays]; renderFormWD(); }
+    function syncFormWD() { formWD = [...window.state.globalWeekdays]; renderFormWD(); }
 
     function renderFormWD() {
       const wrap = document.getElementById('form-wd');
@@ -1327,7 +1387,7 @@
 
     /* ── Modal edição ── */
     function openModal(id) {
-      const book = state.books.find(b => b.id === id);
+      const book = window.state.books.find(b => b.id === id);
       if (!book) return;
       document.getElementById('m-id').value = book.id;
       document.getElementById('m-title').value = book.title;
@@ -1335,6 +1395,7 @@
       document.getElementById('m-total').value = book.total;
       document.getElementById('m-start').value = book.start;
       document.getElementById('m-end').value = book.end;
+      document.getElementById('m-notes').value = book.notes || '';
       modalWD = [...(book.weekdays || DEFAULT_WD)];
       renderModalWD();
       openOverlay('edit-overlay');
@@ -1354,7 +1415,9 @@
       if (start >= end) { alert('A data final deve ser após a data inicial.'); return; }
       if (modalWD.length === 0) { alert('Selecione ao menos um dia de leitura.'); return; }
 
-      const book = state.books.find(b => b.id === id);
+      const notes = document.getElementById('m-notes').value.trim();
+
+      const book = window.state.books.find(b => b.id === id);
       if (!book) return;
 
       const newCurrent = Math.min(isNaN(current) ? 0 : current, total);
@@ -1366,6 +1429,7 @@
       book.start = start;
       book.end = end;
       book.weekdays = [...modalWD];
+      book.notes = notes;
 
       saveState(); closeOverlay('edit-overlay'); renderAll();
     }
@@ -1475,6 +1539,8 @@
          <div class="stat"><div class="stat-label">Dias úteis decorridos</div><div class="stat-value">${c.elapsedWorkDays}</div></div>
          <div class="stat"><div class="stat-label">Dias úteis restantes</div><div class="stat-value ${c.remainingWorkDays === 0 && c.left > 0 ? 'danger' : ''}">${c.remainingWorkDays}</div></div>`;
 
+      const notesHTML = b.notes ? `<div class="book-notes">${b.notes}</div>` : '';
+
       card.innerHTML = `
       ${actions}
       <div class="card-header">
@@ -1485,6 +1551,7 @@
       <div class="progress-bar-wrap">
         <div class="progress-bar ${c.complete ? 'complete' : c.status}" style="width:${c.pct}%"></div>
       </div>
+      ${notesHTML}
       <div class="stats-grid">${statsHTML}</div>
       <div class="dates-row">
         <span>Início: ${formatDate(b.start)}</span>
@@ -1526,7 +1593,7 @@
     function renderCards() {
       const grid = document.getElementById('cards-grid');
       grid.innerHTML = '';
-      const active = state.books.filter(b => !b.archived);
+      const active = window.state.books.filter(b => !b.archived);
       if (active.length === 0) {
         grid.innerHTML = '<div class="empty-state">Nenhum livro ativo. Adicione um acima ou desarquive um livro.</div>';
       } else {
@@ -1538,7 +1605,7 @@
     function renderArchive() {
       const grid = document.getElementById('archive-grid');
       grid.innerHTML = '';
-      const archived = state.books.filter(b => b.archived);
+      const archived = window.state.books.filter(b => b.archived);
       if (archived.length === 0) {
         grid.innerHTML = '<div class="empty-state">Nenhum livro arquivado.</div>';
       } else {
@@ -1560,7 +1627,7 @@
     function saveEdit(id) {
       const inp = document.getElementById(`inp-${id}`);
       const val = parseInt(inp.value);
-      const book = state.books.find(b => b.id === id);
+      const book = window.state.books.find(b => b.id === id);
       if (!book || isNaN(val) || val < 0) { cancelEdit(id); return; }
       const newPage = Math.min(val, book.total);
       if (newPage !== book.current) pushHistory(book, newPage);
@@ -1582,8 +1649,8 @@
     /* ── Resumo ── */
     function renderSummary() {
       const s = document.getElementById('summary');
-      const active = state.books.filter(b => !b.archived);
-      const archived = state.books.filter(b => b.archived);
+      const active = window.state.books.filter(b => !b.archived);
+      const archived = window.state.books.filter(b => b.archived);
       const readPages = active.reduce((a, b) => a + b.current, 0);
       const leftPages = active.reduce((a, b) => a + Math.max(0, b.total - b.current), 0);
       const onTrack = active.filter(b => calcBook(b).status === 'success').length;
@@ -1612,19 +1679,21 @@
       if (start >= end) { alert('A data final deve ser após a data inicial.'); return; }
       if (formWD.length === 0) { alert('Selecione ao menos um dia de leitura.'); return; }
 
-      const newBook = { id: uid(), title, current, total, start, end, weekdays: [...formWD], history: [], archived: false };
+      const notes = document.getElementById('f-notes').value.trim();
+
+      const newBook = { id: uid(), title, current, total, start, end, weekdays: [...formWD], history: [], archived: false, notes };
       if (current > 0) newBook.history.push({ date: todayStr(), page: current });
 
-      state.books.push(newBook);
+      window.state.books.push(newBook);
       saveState(); renderAll();
-      ['f-title', 'f-current', 'f-total', 'f-start', 'f-end'].forEach(id => { document.getElementById(id).value = ''; });
+      ['f-title', 'f-current', 'f-total', 'f-start', 'f-end', 'f-notes'].forEach(id => { document.getElementById(id).value = ''; });
       syncFormWD();
     }
 
     /* ── Remover livro ── */
     function removeBook(id) {
       if (!confirm('Remover permanentemente este livro? Esta ação não pode ser desfeita.')) return;
-      state.books = state.books.filter(b => b.id !== id);
+      window.state.books = window.state.books.filter(b => b.id !== id);
       saveState(); renderAll();
     }
 
@@ -1646,7 +1715,7 @@
       const sel = document.getElementById('r-book');
       const current = sel.value;
       sel.innerHTML = '<option value="all">Todos os livros ativos</option>';
-      state.books.filter(b => !b.archived).forEach(b => {
+      window.state.books.filter(b => !b.archived).forEach(b => {
         const opt = document.createElement('option');
         opt.value = b.id; opt.textContent = b.title;
         sel.appendChild(opt);
@@ -1662,8 +1731,8 @@
       const todaySt = todayStr();
 
       const books = bookId === 'all'
-        ? state.books.filter(b => !b.archived)
-        : state.books.filter(b => b.id === bookId);
+        ? window.state.books.filter(b => !b.archived)
+        : window.state.books.filter(b => b.id === bookId);
 
       if (books.length === 0) { body.innerHTML = '<div class="report-empty">Nenhum livro para exibir.</div>'; return; }
 
@@ -1806,7 +1875,7 @@
             if (localStr !== cloudStr) {
               console.log("Sincronizando mudanças da nuvem...");
               window.state = cloudData;
-              localStorage.setItem('leitura_v6', cloudStr);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
               if (window.initApp) window.initApp();
               updateStatus('online', 'Nuvem atualizada');
             }

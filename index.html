@@ -15,19 +15,28 @@
     }
 
     :root {
-      --accent-main: #06b6d4;
-      --accent-secondary: #0ea5e9;
-      --accent-strong: #7dd3fc;
-      --accent-title: #bae6fd;
-      --accent-chip-bg: #0b3140;
-      --accent-chip-text: #7dd3fc;
-      --accent-dark: #04101a;
-      --accent-btn-hover: #0b3140;
+      --accent-main:      #10b981;
+      --accent-secondary: #34d399;
+      --accent-strong:    #6ee7b7;
+      --accent-title:     #a7f3d0;
+      --accent-chip-bg:   #022c22;
+      --accent-chip-text: #6ee7b7;
+      --accent-dark:      #011a15;
+      --accent-btn-hover: #022c22;
+      --bg-body:          var(--bg-body);
+      --bg-card:          var(--bg-card);
+      --bg-deep:          var(--bg-deep);
+      --bg-hover:         var(--bg-hover);
+      --border-subtle:    var(--border-subtle);
+      --border-light:     var(--border-light);
+      --card-shadow:      rgba(16,185,129,0.12);
+      --chart-line:       #10b981;
+      --chart-dot:        #6ee7b7;
     }
 
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #0f0f1a;
+      background: var(--bg-body);
       color: #e0e0f0;
       min-height: 100vh;
       padding: 24px 20px 60px;
@@ -39,8 +48,8 @@
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: #1a1a2e;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
       padding: 8px 14px;
       border-radius: 20px;
       font-size: 0.75rem;
@@ -110,7 +119,7 @@
     }
 
     .summary-item {
-      background: #1a1a2e;
+      background: var(--bg-card);
       border-radius: 12px;
       padding: 14px 16px;
       text-align: center;
@@ -132,7 +141,7 @@
 
     /* DIAS PADRÃO */
     .weekdays-bar {
-      background: #1a1a2e;
+      background: var(--bg-card);
       border-radius: 14px;
       padding: 16px 20px;
       margin-bottom: 28px;
@@ -160,8 +169,8 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      border: 2px solid #2e2e4e;
-      background: #12122a;
+      border: 2px solid var(--border-subtle);
+      background: var(--bg-deep);
       color: #666;
       font-size: 0.75rem;
       font-weight: 700;
@@ -189,8 +198,8 @@
     }
 
     .btn-top {
-      background: #1a1a2e;
-      border: 1px solid #3a3a5e;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
       border-radius: 10px;
       color: var(--accent-strong);
       padding: 9px 18px;
@@ -217,8 +226,8 @@
     }
 
     .card {
-      background: #1a1a2e;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
       border-radius: 16px;
       padding: 20px;
       position: relative;
@@ -227,12 +236,12 @@
 
     .card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 24px rgba(6, 182, 212, 0.12);
+      box-shadow: 0 8px 24px var(--card-shadow);
     }
 
     .card.archived {
       opacity: 0.7;
-      border-color: #1e1e38;
+      border-color: var(--bg-hover);
     }
 
     .card.archived:hover {
@@ -317,8 +326,8 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      border: 1.5px solid #2e2e4e;
-      background: #12122a;
+      border: 1.5px solid var(--border-subtle);
+      background: var(--bg-deep);
       color: #555;
       font-size: 0.65rem;
       font-weight: 700;
@@ -340,7 +349,7 @@
     }
 
     .progress-bar-wrap {
-      background: #0f0f1a;
+      background: var(--bg-body);
       border-radius: 8px;
       height: 10px;
       margin-bottom: 14px;
@@ -362,10 +371,7 @@
       background: linear-gradient(90deg, #d97706, #fbbf24);
     }
 
-    .progress-bar.success {
-      background: linear-gradient(90deg, #059669, #34d399);
-    }
-
+    .progress-bar.success,
     .progress-bar.complete {
       background: linear-gradient(90deg, #059669, #34d399);
     }
@@ -378,7 +384,7 @@
     }
 
     .stat {
-      background: #12122a;
+      background: var(--bg-deep);
       border-radius: 10px;
       padding: 8px 12px;
     }
@@ -435,7 +441,7 @@
 
     .current-input {
       width: 90px;
-      background: #0f0f1a;
+      background: var(--bg-body);
       border: 1px solid var(--accent-main);
       border-radius: 6px;
       padding: 3px 8px;
@@ -481,8 +487,8 @@
     .history-toggle {
       margin-top: 12px;
       width: 100%;
-      background: #12122a;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-subtle);
       border-radius: 8px;
       color: #888;
       font-size: 0.75rem;
@@ -518,7 +524,7 @@
     }
 
     .history-entry:nth-child(odd) {
-      background: #12122a;
+      background: var(--bg-deep);
     }
 
     .history-entry .he-date {
@@ -559,7 +565,7 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: #2e2e4e;
+      background: var(--border-subtle);
     }
 
     /* MODAIS */
@@ -583,8 +589,8 @@
     }
 
     .modal {
-      background: #1a1a2e;
-      border: 1px solid #3a3a5e;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
       border-radius: 20px;
       padding: 28px;
       width: 100%;
@@ -598,20 +604,6 @@
       transform: translateY(0);
     }
 
-    .form-card {
-      background: #1a1a2e;
-      border: 1px solid #2e2e4e;
-      border-radius: 20px;
-      padding: 30px;
-      margin-bottom: 28px;
-    }
-
-    .form-card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 20px;
-      color: var(--accent-strong);
-    }
-
     .form-group label {
       display: block;
       font-size: 0.72rem;
@@ -623,8 +615,8 @@
 
     .form-group input {
       width: 100%;
-      background: #12122a;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-subtle);
       border-radius: 10px;
       padding: 11px 16px;
       color: #e0e0f0;
@@ -657,8 +649,8 @@
 
     .modal-group input {
       width: 100%;
-      background: #12122a;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-subtle);
       border-radius: 8px;
       padding: 9px 12px;
       color: #e0e0f0;
@@ -694,8 +686,8 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      border: 2px solid #2e2e4e;
-      background: #12122a;
+      border: 2px solid var(--border-subtle);
+      background: var(--bg-deep);
       color: #666;
       font-size: 0.75rem;
       font-weight: 700;
@@ -720,8 +712,8 @@
     }
 
     .btn-cancel {
-      background: #12122a;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-subtle);
       border-radius: 10px;
       color: #888;
       padding: 10px 20px;
@@ -778,8 +770,8 @@
 
     .report-controls select,
     .report-controls input[type="number"] {
-      background: #12122a;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-subtle);
       border-radius: 8px;
       padding: 7px 10px;
       color: #e0e0f0;
@@ -794,8 +786,8 @@
     }
 
     .btn-print {
-      background: #12122a;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-subtle);
       border-radius: 8px;
       color: var(--accent-strong);
       padding: 7px 14px;
@@ -811,7 +803,7 @@
     .report-table-wrap {
       overflow-x: auto;
       border-radius: 10px;
-      border: 1px solid #2e2e4e;
+      border: 1px solid var(--border-subtle);
     }
 
     .report-table {
@@ -821,7 +813,7 @@
     }
 
     .report-table thead tr {
-      background: #12122a;
+      background: var(--bg-deep);
     }
 
     .report-table th {
@@ -832,12 +824,12 @@
       text-transform: uppercase;
       letter-spacing: 0.4px;
       white-space: nowrap;
-      border-bottom: 1px solid #2e2e4e;
+      border-bottom: 1px solid var(--border-subtle);
     }
 
     .report-table td {
       padding: 9px 12px;
-      border-bottom: 1px solid #1e1e38;
+      border-bottom: 1px solid var(--bg-hover);
       white-space: nowrap;
     }
 
@@ -846,7 +838,7 @@
     }
 
     .report-table tbody tr:hover {
-      background: #1e1e38;
+      background: var(--bg-hover);
     }
 
     .report-table tbody tr.today-row {
@@ -894,8 +886,8 @@
 
     /* FORMULÁRIO */
     .form-card {
-      background: #1a1a2e;
-      border: 1px dashed #3a3a5e;
+      background: var(--bg-card);
+      border: 1px dashed var(--border-light);
       border-radius: 16px;
       padding: 24px;
       margin-bottom: 28px;
@@ -925,8 +917,8 @@
 
     .form-group input {
       width: 100%;
-      background: #12122a;
-      border: 1px solid #2e2e4e;
+      background: var(--bg-deep);
+      border: 1px solid var(--border-subtle);
       border-radius: 8px;
       padding: 9px 12px;
       color: #e0e0f0;
@@ -962,8 +954,8 @@
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      border: 2px solid #2e2e4e;
-      background: #12122a;
+      border: 2px solid var(--border-subtle);
+      background: var(--bg-deep);
       color: #666;
       font-size: 0.75rem;
       font-weight: 700;
@@ -1088,11 +1080,96 @@
       }
     }
 
+    /* THEME PICKER */
+    .theme-picker {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      padding: 7px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 99;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .tp-label { font-size: 0.85rem; user-select: none; }
+
+    .tp-swatch {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      background: var(--sw);
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .tp-swatch:hover { transform: scale(1.35); }
+
+    .tp-swatch.active {
+      border-color: #fff;
+      transform: scale(1.2);
+      box-shadow: 0 0 7px var(--sw);
+    }
+
+    /* SEARCH BAR & SORT */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap { flex: 1; min-width: 180px; }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 9px 14px;
+      color: #e0e0f0;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus { border-color: var(--accent-main); }
+
+    .sort-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 9px 12px;
+      color: var(--accent-strong);
+      font-size: 0.85rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .sort-select:hover, .sort-select:focus { border-color: var(--accent-main); }
+
+    /* CHART */
+    .book-chart {
+      width: 100%;
+      height: 72px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
     /* OBSERVAÇÃO */
     .book-notes {
       font-size: 0.78rem;
       color: #aaa;
-      background: #12122a;
+      background: var(--bg-deep);
       padding: 10px;
       border-radius: 8px;
       margin-bottom: 14px;
@@ -1107,18 +1184,41 @@
 <body>
 
   <h1>📚 Planejamento de Leituras</h1>
-  <p class="subtitle">Clique na página atual para editar inline • ✏️ editar • 📊 relatório • 📦 arquivar</p>
+  <p class="subtitle">Clique na página atual para editar inline • ✏️ editar • 📊 relatório • 📦 arquivar • [N] novo livro • [R] relatório</p>
 
   <div class="summary" id="summary"></div>
+
+  <div class="theme-picker">
+    <span class="tp-label">🎨</span>
+    <button class="tp-swatch" data-theme="cyan"    style="--sw:#06b6d4" title="Ciano"     onclick="applyTheme('cyan')"></button>
+    <button class="tp-swatch" data-theme="emerald" style="--sw:#10b981" title="Esmeralda" onclick="applyTheme('emerald')"></button>
+    <button class="tp-swatch" data-theme="violet"  style="--sw:#8b5cf6" title="Violeta"   onclick="applyTheme('violet')"></button>
+    <button class="tp-swatch" data-theme="amber"   style="--sw:#f59e0b" title="Âmbar"    onclick="applyTheme('amber')"></button>
+    <button class="tp-swatch" data-theme="rose"    style="--sw:#f43f5e" title="Rosa"      onclick="applyTheme('rose')"></button>
+  </div>
 
   <div class="sync-status" id="sync-status">
     <div class="sync-dot" id="sync-dot"></div>
     <span id="sync-text">Local Only</span>
   </div>
 
-  <div class="top-actions">
+  <div class="top-bar">
+    <div class="search-wrap">
+      <input type="text" class="search-input" id="search-input" placeholder="🔍 Buscar livro..." oninput="renderCards()" />
+    </div>
+    <select class="sort-select" id="sort-select" onchange="renderCards()">
+      <option value="default">Ordem padrão</option>
+      <option value="status">Por status</option>
+      <option value="pct-asc">% crescente</option>
+      <option value="pct-desc">% decrescente</option>
+      <option value="deadline">Por prazo</option>
+      <option value="title">Por título</option>
+    </select>
     <button class="btn-top" onclick="toggleArchiveView()">📦 <span id="archive-btn-label">Ver arquivo</span></button>
-    <button class="btn-top" onclick="openReport()">📊 Relatório de leituras futuras</button>
+    <button class="btn-top" onclick="openReport()">📊 Relatório</button>
+    <button class="btn-top" id="notif-btn" onclick="toggleNotifications()">🔕 Notificações</button>
+    <button class="btn-top" onclick="exportData()">⬇️ Exportar</button>
+    <label class="btn-top" style="cursor:pointer;">⬆️ Importar<input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)" /></label>
   </div>
 
   <div class="weekdays-bar">
@@ -1234,6 +1334,15 @@
 
   <script>
     const STORAGE_KEY = 'leitura_v6';
+
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
     const DAY_NAMES = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
     const DAY_FULL = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
     const DEFAULT_WD = [1, 2, 3, 4, 5];
@@ -1271,12 +1380,12 @@
     });
 
     function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      window.state = state;
-      if (window.syncToFirebase) window.syncToFirebase(state);
+      window.state.updatedAt = Date.now();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(window.state));
+      if (window.syncToFirebase) window.syncToFirebase(window.state);
     }
 
-    function uid() { return Math.random().toString(36).substr(2, 9); }
+    function uid() { return Math.random().toString(36).substring(2, 11); }
 
     /* ── Datas ── */
     function parseDate(str) { const [y, m, d] = str.split('-').map(Number); return new Date(y, m - 1, d); }
@@ -1436,7 +1545,8 @@
 
     /* ── Arquivar / Desarquivar ── */
     function archiveBook(id) {
-      const book = state.books.find(b => b.id === id);
+      if (!confirm('Arquivar este livro? Ele poderá ser restaurado depois.')) return;
+      const book = window.state.books.find(b => b.id === id);
       if (!book) return;
       book.archived = true;
       book.archivedAt = todayStr();
@@ -1444,7 +1554,7 @@
     }
 
     function unarchiveBook(id) {
-      const book = state.books.find(b => b.id === id);
+      const book = window.state.books.find(b => b.id === id);
       if (!book) return;
       book.archived = false;
       book.archivedAt = null;
@@ -1491,6 +1601,14 @@
       el.classList.toggle('open');
       const isOpen = el.classList.contains('open');
       btn.textContent = btn.textContent.replace(isOpen ? 'Ver' : 'Ocultar', isOpen ? 'Ocultar' : 'Ver');
+      if (isOpen) {
+        const canvas = el.querySelector('.book-chart');
+        if (canvas) {
+          const bookId = id.replace('hist-', '');
+          const book = window.state.books.find(b => b.id === bookId);
+          if (book) { canvas.width = el.offsetWidth || 300; drawChart(canvas, book); }
+        }
+      }
     }
 
     /* ── Build card ── */
@@ -1539,12 +1657,12 @@
          <div class="stat"><div class="stat-label">Dias úteis decorridos</div><div class="stat-value">${c.elapsedWorkDays}</div></div>
          <div class="stat"><div class="stat-label">Dias úteis restantes</div><div class="stat-value ${c.remainingWorkDays === 0 && c.left > 0 ? 'danger' : ''}">${c.remainingWorkDays}</div></div>`;
 
-      const notesHTML = b.notes ? `<div class="book-notes">${b.notes}</div>` : '';
+      const notesHTML = b.notes ? `<div class="book-notes">${escHtml(b.notes)}</div>` : '';
 
       card.innerHTML = `
       ${actions}
       <div class="card-header">
-        <div class="card-title">${b.title}${archivedBadge}</div>
+        <div class="card-title">${escHtml(b.title)}${archivedBadge}</div>
         <div class="card-pct">${c.pct}%</div>
       </div>
       <div class="card-weekdays" id="cwd-${b.id}"></div>
@@ -1561,7 +1679,10 @@
       <button class="history-toggle" onclick="toggleHistory('hist-${b.id}',this)">
         📈 Ver histórico de progresso (${(b.history || []).length} registros)
       </button>
-      <div class="history-list" id="hist-${b.id}">${renderHistoryHTML(b)}</div>
+      <div class="history-list" id="hist-${b.id}">
+        <canvas class="book-chart" id="chart-${b.id}"></canvas>
+        ${renderHistoryHTML(b)}
+      </div>
     `;
 
       return card;
@@ -1593,11 +1714,14 @@
     function renderCards() {
       const grid = document.getElementById('cards-grid');
       grid.innerHTML = '';
-      const active = window.state.books.filter(b => !b.archived);
-      if (active.length === 0) {
-        grid.innerHTML = '<div class="empty-state">Nenhum livro ativo. Adicione um acima ou desarquive um livro.</div>';
+      const books = getSortedFilteredBooks();
+      if (books.length === 0) {
+        const allActive = window.state.books.filter(b => !b.archived).length;
+        grid.innerHTML = allActive === 0
+          ? '<div class="empty-state">Nenhum livro ativo. Adicione um acima ou desarquive um livro.</div>'
+          : '<div class="empty-state">Nenhum livro encontrado para essa busca.</div>';
       } else {
-        active.forEach(b => { grid.appendChild(buildCard(b, false)); renderCardWD(b, false); });
+        books.forEach(b => { grid.appendChild(buildCard(b, false)); renderCardWD(b, false); });
       }
       renderSummary();
     }
@@ -1653,15 +1777,18 @@
       const archived = window.state.books.filter(b => b.archived);
       const readPages = active.reduce((a, b) => a + b.current, 0);
       const leftPages = active.reduce((a, b) => a + Math.max(0, b.total - b.current), 0);
-      const onTrack = active.filter(b => calcBook(b).status === 'success').length;
-      const avgTotal = active.reduce((a, b) => a + calcBook(b).avgPerDay, 0);
+      const calcs = active.map(b => calcBook(b));
+      const onTrack = calcs.filter(c => c.status === 'success').length;
+      const avgTotal = calcs.reduce((a, c) => a + c.avgPerDay, 0);
 
+      const streak = calcStreak();
       s.innerHTML = `
       <div class="summary-item"><div class="s-label">Livros ativos</div><div class="s-value">${active.length}</div></div>
       <div class="summary-item"><div class="s-label">Páginas lidas</div><div class="s-value">${readPages.toLocaleString('pt-BR')}</div></div>
       <div class="summary-item"><div class="s-label">Páginas restantes</div><div class="s-value">${leftPages.toLocaleString('pt-BR')}</div></div>
       <div class="summary-item"><div class="s-label">No ritmo</div><div class="s-value" style="color:#34d399">${onTrack}/${active.length}</div></div>
       <div class="summary-item"><div class="s-label">Média diária total</div><div class="s-value">${avgTotal.toFixed(1)}</div></div>
+      <div class="summary-item"><div class="s-label">Sequência atual</div><div class="s-value" style="color:${streak > 0 ? '#fbbf24' : '#888'}">${streak > 0 ? '🔥 ' : ''}${streak} dia${streak !== 1 ? 's' : ''}</div></div>
       <div class="summary-item"><div class="s-label">Arquivados</div><div class="s-value" style="color:#888">${archived.length}</div></div>
     `;
     }
@@ -1791,7 +1918,7 @@
           <tr class="${rowClass}">
             <td>${i === 0 ? `<strong>${formatDate(dateStr)}</strong>${todayBadge}` : ''}</td>
             <td class="rt-day">${i === 0 ? DAY_FULL[r.dayOfWeek] : ''}</td>
-            <td class="rt-book">${r.bookTitle}</td>
+            <td class="rt-book">${escHtml(r.bookTitle)}</td>
             <td class="rt-delta">+${r.pagesToRead.toLocaleString('pt-BR')}</td>
             <td class="rt-page">${r.targetPage.toLocaleString('pt-BR')}</td>
           </tr>`;
@@ -1802,17 +1929,257 @@
       body.innerHTML = html;
     }
 
+    /* ── Temas ── */
+    const THEMES = {
+      cyan: {
+        '--accent-main':      '#06b6d4', '--accent-secondary': '#0ea5e9',
+        '--accent-strong':    '#7dd3fc', '--accent-title':     '#bae6fd',
+        '--accent-chip-bg':   '#0b3140', '--accent-chip-text': '#7dd3fc',
+        '--accent-dark':      '#04101a', '--accent-btn-hover': '#0b3140',
+        '--bg-body':          '#0f0f1a', '--bg-card':          '#1a1a2e',
+        '--bg-deep':          '#12122a', '--bg-hover':         '#1e1e38',
+        '--border-subtle':    '#2e2e4e', '--border-light':     '#3a3a5e',
+        '--card-shadow':      'rgba(6,182,212,0.12)',
+        '--chart-line':       '#06b6d4', '--chart-dot':        '#7dd3fc',
+      },
+      emerald: {
+        '--accent-main':      '#10b981', '--accent-secondary': '#34d399',
+        '--accent-strong':    '#6ee7b7', '--accent-title':     '#a7f3d0',
+        '--accent-chip-bg':   '#022c22', '--accent-chip-text': '#6ee7b7',
+        '--accent-dark':      '#011a15', '--accent-btn-hover': '#022c22',
+        '--bg-body':          '#0a1510', '--bg-card':          '#101e16',
+        '--bg-deep':          '#0a1710', '--bg-hover':         '#0e2018',
+        '--border-subtle':    '#1a3a2e', '--border-light':     '#1e4a38',
+        '--card-shadow':      'rgba(16,185,129,0.12)',
+        '--chart-line':       '#10b981', '--chart-dot':        '#6ee7b7',
+      },
+      violet: {
+        '--accent-main':      '#8b5cf6', '--accent-secondary': '#a78bfa',
+        '--accent-strong':    '#c4b5fd', '--accent-title':     '#ddd6fe',
+        '--accent-chip-bg':   '#2e1065', '--accent-chip-text': '#c4b5fd',
+        '--accent-dark':      '#0d0520', '--accent-btn-hover': '#2e1065',
+        '--bg-body':          '#100d1a', '--bg-card':          '#1a1628',
+        '--bg-deep':          '#120f22', '--bg-hover':         '#1a1540',
+        '--border-subtle':    '#2e2a4e', '--border-light':     '#3a3560',
+        '--card-shadow':      'rgba(139,92,246,0.12)',
+        '--chart-line':       '#8b5cf6', '--chart-dot':        '#c4b5fd',
+      },
+      amber: {
+        '--accent-main':      '#f59e0b', '--accent-secondary': '#fbbf24',
+        '--accent-strong':    '#fcd34d', '--accent-title':     '#fde68a',
+        '--accent-chip-bg':   '#2d1a00', '--accent-chip-text': '#fcd34d',
+        '--accent-dark':      '#1a0e00', '--accent-btn-hover': '#2d1a00',
+        '--bg-body':          '#111009', '--bg-card':          '#1c1a10',
+        '--bg-deep':          '#141208', '--bg-hover':         '#201e0e',
+        '--border-subtle':    '#3a3218', '--border-light':     '#4a4020',
+        '--card-shadow':      'rgba(245,158,11,0.12)',
+        '--chart-line':       '#f59e0b', '--chart-dot':        '#fcd34d',
+      },
+      rose: {
+        '--accent-main':      '#f43f5e', '--accent-secondary': '#fb7185',
+        '--accent-strong':    '#fda4af', '--accent-title':     '#fecdd3',
+        '--accent-chip-bg':   '#2d0a14', '--accent-chip-text': '#fda4af',
+        '--accent-dark':      '#1a0509', '--accent-btn-hover': '#2d0a14',
+        '--bg-body':          '#120a0d', '--bg-card':          '#1e1015',
+        '--bg-deep':          '#170c11', '--bg-hover':         '#220e16',
+        '--border-subtle':    '#3a1a22', '--border-light':     '#4a1e2a',
+        '--card-shadow':      'rgba(244,63,94,0.12)',
+        '--chart-line':       '#f43f5e', '--chart-dot':        '#fda4af',
+      },
+    };
+
+    function applyTheme(name) {
+      const theme = THEMES[name] || THEMES.emerald;
+      const root = document.documentElement;
+      Object.entries(theme).forEach(([k, v]) => root.style.setProperty(k, v));
+      localStorage.setItem('theme', name);
+      document.querySelectorAll('.tp-swatch').forEach(s =>
+        s.classList.toggle('active', s.dataset.theme === name)
+      );
+    }
+
+    function hexToRgba(hex, alpha) {
+      const h = hex.replace('#', '');
+      const r = parseInt(h.substring(0, 2), 16);
+      const g = parseInt(h.substring(2, 4), 16);
+      const b = parseInt(h.substring(4, 6), 16);
+      return `rgba(${r},${g},${b},${alpha})`;
+    }
+
+    /* ── Streak ── */
+    function calcStreak() {
+      const allDates = new Set();
+      window.state.books.forEach(b => { (b.history || []).forEach(h => allDates.add(h.date)); });
+      if (allDates.size === 0) return 0;
+      let streak = 0;
+      let check = todayStr();
+      if (!allDates.has(check)) {
+        const d = parseDate(check);
+        d.setDate(d.getDate() - 1);
+        check = dateToStr(d);
+        if (!allDates.has(check)) return 0;
+      }
+      while (allDates.has(check)) {
+        streak++;
+        const d = parseDate(check);
+        d.setDate(d.getDate() - 1);
+        check = dateToStr(d);
+      }
+      return streak;
+    }
+
+    /* ── Export / Import ── */
+    function exportData() {
+      const blob = new Blob([JSON.stringify(window.state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = `leituras_${todayStr()}.json`;
+      a.click(); URL.revokeObjectURL(url);
+    }
+
+    function importData(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        try {
+          const data = JSON.parse(ev.target.result);
+          if (!data || !Array.isArray(data.books)) { alert('Arquivo inválido.'); return; }
+          if (!confirm(`Importar ${data.books.length} livro(s)? Os dados atuais serão substituídos.`)) return;
+          window.state = data;
+          saveState();
+          window.initApp();
+        } catch { alert('Erro ao ler o arquivo.'); }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    }
+
+    /* ── Notificações ── */
+    function toggleNotifications() {
+      if (!('Notification' in window)) { alert('Seu navegador não suporta notificações.'); return; }
+      if (Notification.permission === 'granted') {
+        window.state.notificationsEnabled = !window.state.notificationsEnabled;
+        saveState(); updateNotifBtn();
+        if (window.state.notificationsEnabled) triggerNotification();
+      } else if (Notification.permission !== 'denied') {
+        Notification.requestPermission().then(p => {
+          if (p !== 'granted') return;
+          window.state.notificationsEnabled = true;
+          saveState(); updateNotifBtn(); triggerNotification();
+        });
+      } else {
+        alert('Permissão bloqueada. Habilite nas configurações do navegador.');
+      }
+    }
+
+    function updateNotifBtn() {
+      const btn = document.getElementById('notif-btn');
+      if (!btn) return;
+      const on = window.state.notificationsEnabled && Notification.permission === 'granted';
+      btn.innerHTML = on ? '🔔 Notificações ativas' : '🔕 Notificações';
+    }
+
+    function triggerNotification() {
+      if (!window.state.notificationsEnabled || Notification.permission !== 'granted') return;
+      if (localStorage.getItem('lastNotif') === todayStr()) return;
+      const active = window.state.books.filter(b => !b.archived && !calcBook(b).complete);
+      if (active.length === 0) return;
+      const body = active.length === 1
+        ? `Lembre de ler "${active[0].title}" hoje!`
+        : `${active.length} livros ativos para ler hoje.`;
+      new Notification('📚 Planejamento de Leituras', { body });
+      localStorage.setItem('lastNotif', todayStr());
+    }
+
+    /* ── Gráfico ── */
+    function drawChart(canvas, b) {
+      const hist = (b.history || []).slice(-30);
+      canvas.width = canvas.parentElement ? canvas.parentElement.offsetWidth - 16 : 300;
+      canvas.height = 72;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+      if (hist.length < 2) {
+        ctx.fillStyle = '#555';
+        ctx.font = '11px Segoe UI, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Poucos dados para o gráfico', W / 2, H / 2 + 4);
+        return;
+      }
+      const pad = 6;
+      const pages = hist.map(h => h.page);
+      const minP = Math.min(...pages), maxP = Math.max(...pages);
+      const range = maxP - minP || 1;
+      const pts = hist.map((h, i) => ({
+        x: pad + (i / (hist.length - 1)) * (W - pad * 2),
+        y: pad + (1 - (h.page - minP) / range) * (H - pad * 2)
+      }));
+      const cs = getComputedStyle(document.documentElement);
+      const chartLine = cs.getPropertyValue('--chart-line').trim() || '#10b981';
+      const chartDot  = cs.getPropertyValue('--chart-dot').trim()  || '#6ee7b7';
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, hexToRgba(chartLine, 0.25));
+      grad.addColorStop(1, hexToRgba(chartLine, 0));
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, H);
+      pts.forEach(p => ctx.lineTo(p.x, p.y));
+      ctx.lineTo(pts[pts.length - 1].x, H);
+      ctx.closePath();
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.beginPath();
+      pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.strokeStyle = chartLine;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      const last = pts[pts.length - 1];
+      ctx.beginPath();
+      ctx.arc(last.x, last.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = chartDot;
+      ctx.fill();
+    }
+
+    /* ── Ordenação / Filtro ── */
+    function getSortedFilteredBooks() {
+      const query = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
+      const sort = document.getElementById('sort-select')?.value || 'default';
+      let books = window.state.books.filter(b => !b.archived);
+      if (query) books = books.filter(b => b.title.toLowerCase().includes(query));
+      if (sort !== 'default') {
+        const sOrder = { danger: 0, warning: 1, success: 2 };
+        books = [...books].sort((a, b) => {
+          switch (sort) {
+            case 'status':    return sOrder[calcBook(a).status] - sOrder[calcBook(b).status];
+            case 'pct-asc':   return calcBook(a).pct - calcBook(b).pct;
+            case 'pct-desc':  return calcBook(b).pct - calcBook(a).pct;
+            case 'deadline':  return a.end.localeCompare(b.end);
+            case 'title':     return a.title.localeCompare(b.title, 'pt-BR');
+            default: return 0;
+          }
+        });
+      }
+      return books;
+    }
+
     /* ── Teclado ── */
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') { closeOverlay('edit-overlay'); closeOverlay('report-overlay'); }
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+      if (e.key === 'n' || e.key === 'N') { document.getElementById('f-title').focus(); e.preventDefault(); }
+      if (e.key === 'r' || e.key === 'R') { openReport(); e.preventDefault(); }
     });
 
     /* ── Init ── */
     window.initApp = () => {
+      applyTheme(localStorage.getItem('theme') || 'emerald');
+      state = window.state;
       formWD = [...window.state.globalWeekdays];
       renderGlobalWD();
       renderFormWD();
       renderAll();
+      updateNotifBtn();
+      triggerNotification();
     };
     window.initApp();
   </script>
@@ -1820,10 +2187,9 @@
   <!-- Firebase Integration -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // --- CONFIGURAÇÃO FIREBASE ---
-    // Substitua pelos dados do seu projeto no Console do Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyBdNYbC7a7kTsjQS5oBK3noh_UGKjz91bM",
       authDomain: "planejamentoleitura.firebaseapp.com",
@@ -1831,7 +2197,6 @@
       storageBucket: "planejamentoleitura.firebasestorage.app",
       messagingSenderId: "657339048636",
       appId: "1:657339048636:web:546cc9af06b619088ae6b9"
-
     };
 
     const statusDot = document.getElementById('sync-dot');
@@ -1842,51 +2207,52 @@
       statusText.textContent = label;
     }
 
-    // Inicializa Firebase apenas se a API Key for válida
     if (firebaseConfig.apiKey !== "SUA_API_KEY") {
       try {
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const docRef = doc(db, "usuarios", "default_user");
+        const auth = getAuth(app);
 
-        updateStatus('online', 'Conectado');
+        updateStatus('syncing', 'Conectando...');
 
-        // Função para enviar dados (chamada pelo saveState no script principal)
-        window.syncToFirebase = async (data) => {
-          try {
-            updateStatus('syncing', 'Salvando...');
-            await setDoc(docRef, JSON.parse(JSON.stringify(data))); // Limpa referências circulares
-            updateStatus('online', 'Sincronizado');
-          } catch (e) {
-            console.error("Erro ao salvar:", e);
-            updateStatus('offline', 'Erro ao salvar. Verifique as Regras do Firestore.');
-          }
-        };
+        signInAnonymously(auth).catch(e => {
+          console.error("Erro auth:", e);
+          updateStatus('offline', 'Falha de autenticação');
+        });
 
-        // Escuta mudanças em tempo real (Carregamento Automático)
-        onSnapshot(docRef, (docSnap) => {
-          if (docSnap.exists()) {
+        onAuthStateChanged(auth, (user) => {
+          if (!user) return;
+          const docRef = doc(db, "usuarios", user.uid);
+          updateStatus('online', 'Conectado');
+
+          window.syncToFirebase = async (data) => {
+            try {
+              updateStatus('syncing', 'Salvando...');
+              await setDoc(docRef, JSON.parse(JSON.stringify(data)));
+              updateStatus('online', 'Sincronizado');
+            } catch (e) {
+              console.error("Erro ao salvar:", e);
+              updateStatus('offline', 'Erro ao salvar. Verifique as Regras do Firestore.');
+            }
+          };
+
+          onSnapshot(docRef, (docSnap) => {
+            if (!docSnap.exists()) return;
             const cloudData = docSnap.data();
-
-            // Verifica se os dados da nuvem são diferentes do estado local atual
-            const localStr = JSON.stringify(window.state);
-            const cloudStr = JSON.stringify(cloudData);
-
-            if (localStr !== cloudStr) {
-              console.log("Sincronizando mudanças da nuvem...");
+            const cloudUpdated = cloudData.updatedAt || 0;
+            const localUpdated = window.state.updatedAt || 0;
+            if (cloudUpdated > localUpdated) {
               window.state = cloudData;
               localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
               if (window.initApp) window.initApp();
               updateStatus('online', 'Nuvem atualizada');
             }
-          } else {
-            console.log("Nenhum dado encontrado na nuvem para este usuário.");
-          }
-        }, (error) => {
-          console.error("Erro no Listener:", error);
-          if (error.code === 'permission-denied') {
-            updateStatus('offline', 'Acesso negado. Ative o "Modo de Teste" no Firestore.');
-          }
+          }, (error) => {
+            console.error("Erro no Listener:", error);
+            updateStatus('offline', error.code === 'permission-denied'
+              ? 'Acesso negado. Ative o "Modo de Teste" no Firestore.'
+              : 'Erro de conexão');
+          });
         });
 
       } catch (e) {
